@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
-	"task-service/internal/app/rest"
-	"task-service/internal/app/rest/task"
-	"task-service/internal/app/rest/user"
-	taskpkg "task-service/internal/pkg/task"
-	userpkg "task-service/internal/pkg/user"
+	"task-service/internal/handler/rest"
+	"task-service/internal/handler/rest/task"
+	"task-service/internal/handler/rest/user"
+	taskpkg "task-service/internal/repository/task"
+	userpkg "task-service/internal/repository/user"
+	task2 "task-service/internal/usecase/task"
 )
 
 const (
@@ -34,7 +35,9 @@ func main() {
 	taskRepo := taskpkg.NewPostgresRepository(db)
 	userRepo := userpkg.NewPostgresRepository(db)
 
-	taskRouter := task.NewRouter(taskRepo)
+	taskService := task2.NewService(taskRepo, userRepo)
+
+	taskRouter := task.NewRouter(taskService)
 	userRouter := user.NewRouter(userRepo)
 
 	router := rest.NewRouter(taskRouter, userRouter)

@@ -3,8 +3,9 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"task-service/internal/app/rest"
-	"task-service/internal/pkg/user"
+	"task-service/internal/entity"
+	"task-service/internal/handler/rest"
+	"task-service/internal/repository/user"
 )
 
 type Router struct {
@@ -45,19 +46,19 @@ func (r *Router) getUserByID(c *gin.Context) {
 }
 
 func (r *Router) createUser(c *gin.Context) {
-	var user user.User
+	var user entity.User
 	if err := c.BindJSON(&user); err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, rest.ErrorModel{Error: err.Error()})
 		return
 	}
 
-	user, err := r.repo.Create(c, user.Login, user.Email)
+	us, err := r.repo.Create(c, user.Login, user.Email)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.IndentedJSON(http.StatusCreated, user)
+	c.IndentedJSON(http.StatusCreated, us)
 }
 
 func (r *Router) deleteUser(c *gin.Context) {
@@ -72,7 +73,7 @@ func (r *Router) deleteUser(c *gin.Context) {
 
 func (r *Router) updateUser(c *gin.Context) {
 	ID := c.Param("id")
-	var user user.User
+	var user entity.User
 	if err := c.BindJSON(&user); err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, rest.ErrorModel{Error: err.Error()})
 		return

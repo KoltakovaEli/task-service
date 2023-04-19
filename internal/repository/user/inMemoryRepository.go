@@ -4,23 +4,24 @@ import (
 	"context"
 	"errors"
 	"github.com/google/uuid"
+	"task-service/internal/entity"
 )
 
 type inMemoryRepository struct {
-	users []*User
+	users []*entity.User
 }
 
 func NewInMemoryRepository() *inMemoryRepository {
-	users := []*User{}
+	users := []*entity.User{}
 	return &inMemoryRepository{users}
 }
 
-func (r *inMemoryRepository) GetUsers(ctx context.Context) []*User {
+func (r *inMemoryRepository) GetUsers(ctx context.Context) []*entity.User {
 	return r.users
 }
 
-func (r *inMemoryRepository) Create(ctx context.Context, name string) User {
-	user := User{
+func (r *inMemoryRepository) Create(ctx context.Context, name string) entity.User {
+	user := entity.User{
 		ID:    uuid.NewString(),
 		Login: name,
 	}
@@ -28,13 +29,13 @@ func (r *inMemoryRepository) Create(ctx context.Context, name string) User {
 	return user
 }
 
-func (r *inMemoryRepository) GetByID(ctx context.Context, ID string) (User, error) {
+func (r *inMemoryRepository) GetByID(ctx context.Context, ID string) (entity.User, error) {
 	for _, t := range r.users {
 		if t.ID == ID {
 			return *t, nil
 		}
 	}
-	return User{}, errors.New("user is not found")
+	return entity.User{}, errors.New("user is not found")
 }
 
 func (r *inMemoryRepository) Delete(ctx context.Context, ID string) error {
@@ -46,16 +47,16 @@ func (r *inMemoryRepository) Delete(ctx context.Context, ID string) error {
 	}
 	return errors.New("user is not exist")
 }
-func remove(slice []*User, s int) []*User {
+func remove(slice []*entity.User, s int) []*entity.User {
 	return append(slice[:s], slice[s+1:]...)
 }
 
-func (r *inMemoryRepository) Update(ctx context.Context, ID string, Name string) (User, error) {
+func (r *inMemoryRepository) Update(ctx context.Context, ID string, Name string) (entity.User, error) {
 	for _, t := range r.users {
 		if t.ID == ID {
 			t.Login = Name
 			return *t, nil
 		}
 	}
-	return User{}, errors.New("user is not found")
+	return entity.User{}, errors.New("user is not found")
 }
